@@ -1,0 +1,107 @@
+import cv2
+import numpy as np
+import argparse
+import sys
+import tkinter as tk
+from tkinter import simpledialog
+import requests
+from io import BytesIO
+
+# Jupyter Notebook에서 인수 설정
+if '__file__' not in globals():
+    # Jupyter Notebook 환경에서 실행되는 경우
+    args = ['--color', 'white', '--bg_image', '']  # 여기서 원하는 색상을 설정
+else:
+    # 명령줄 인수 파싱
+    parser = argparse.ArgumentParser(description="EMDR Eye Movement Program")
+    parser.add_argument('--color', type=str, default='white', help='Color of the ball (red, green, blue, brown, white)')
+    parser.add_argument('--bg_image', type=str, default='', help='Path to the background image')
+    args = parser.parse_args()
+
+# 색상 설정
+color_dict = {
+    'red': (0, 0, 255),
+    'green': (0, 255, 0),
+    'blue': (255, 0, 0),
+    'brown': (42, 42, 165),
+    'white': (255, 255, 255)
+}
+
+# Tkinter 설정
+root = tk.Tk()
+root.withdraw()
+
+# 사용자 입력 받기
+speed = simpledialog.askinteger("Input", "Enter the speed of the ball (e.g., 10, 20, 30):", minvalue=1, maxvalue=100)
+if not speed:
+    speed = 30  # 기본값 설정
+
+color_choice = simpledialog.askstring("Input", "Enter the color of the ball (red, green, blue, brown, white):")
+if color_choice not in color_dict:
+    color_choice = 'white'  # 기본값 설정
+
+ball_color = color_dict[color_choice.lower()]
+
+# 배경 이미지 URL
+bg_image_url = 'https://images.pexels.com/photos/7130560/pexels-photo-7130560.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+
+# 배경 이미지 다운로드 및 읽기
+response = requests.get(bg_image_url)
+background = cv2.imdecode(np.frombuffer(response.content, np.uint8), cv2.IMREAD_UNCHANGED)
+if background is None:
+    raise ValueError(f"Cannot load image from URL: {bg_image_url}")
+
+# 크기를 조정하고 알파 채널이 있으면 제거
+background = cv2.resize(background, (1920, 1080))
+if background.shape[2] == 4:
+    background = cv2.cvtColor(background, cv2.COLOR_BGRA2BGR)
+
+# 윈도우 설정
+window_name = 'EMDR Eye Movement'
+cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+# 화면 크기
+screen_width = 1920
+screen_height = 1080
+
+# 점의 초기 위치
+x = screen_width // 2
+y = screen_height // 2
+radius = 150
+
+# 좌우로 움직이도록 설정
+direction = 1
+
+def draw_gradient_circle(image, center, radius, color):
+    for r in range(radius, 0, -1):
+        alpha = r / radius
+        overlay_color = (
+            int(color[0] * alpha + 0 * (1 - alpha)),
+            int(color[1] * alpha + 0 * (1 - alpha)),
+            int(color[2] * alpha + 0 * (1 - alpha))
+        )
+        cv2.circle(image, center, r, overlay_color, -1)
+
+# 무한 루프 (ESC 키를 누르면 종료)
+while True:
+    # 배경 화면 복사
+    screen = background.copy()
+
+    # 점 그리기
+    draw_gradient_circle(screen, (x, y), radius, ball_color)
+
+    # 점의 위치 업데이트
+    x += speed * direction
+    if x >= screen_width - radius or x <= radius:
+        direction *= -1
+
+    # 화면에 표시
+    cv2.imshow(window_name, screen)
+
+    # ESC 키를 눌러 루프 탈출
+    if cv2.waitKey(30) == 27:
+        break
+
+# 윈도우 닫기
+cv2.destroyAllWindows()
