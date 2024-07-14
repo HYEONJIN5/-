@@ -52,23 +52,23 @@ if background is None:
     raise ValueError(f"Cannot load image from URL: {bg_image_url}")
 
 # 크기를 조정하고 알파 채널이 있으면 제거
-background = cv2.resize(background, (1920, 1080))
+background = cv2.resize(background, (960, 540))  # Smaller size, e.g., 960x540
 if background.shape[2] == 4:
     background = cv2.cvtColor(background, cv2.COLOR_BGRA2BGR)
 
 # 윈도우 설정
 window_name = 'EMDR Eye Movement'
-cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
-cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+cv2.resizeWindow(window_name, 960, 540)  # Set the window size
 
 # 화면 크기
-screen_width = 1920
-screen_height = 1080
+screen_width = 960
+screen_height = 540
 
 # 점의 초기 위치
 x = screen_width // 2
 y = screen_height // 2
-radius = 150
+radius = 75  # Adjust the radius for the smaller window
 
 # 좌우로 움직이도록 설정
 direction = 1
