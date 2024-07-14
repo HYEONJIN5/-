@@ -1,0 +1,180 @@
+import streamlit as st
+
+class SimdatChatbot:
+    def __init__(self):
+        self.state = "initial"
+        self.scenario = {}
+
+    def handle_message(self, message):
+        if self.state == "initial":
+            return self.initial_state(message)
+        elif self.state == "cognitive_reappraisal":
+            return self.cognitive_reappraisal_state(message)
+        elif self.state == "stabilization":
+            return self.stabilization_technique(message)
+        elif self.state == "cognitive_reappraisal_ongoing":
+            return self.cognitive_reappraisal_ongoing_state(message)
+        elif self.state == "reappraisal_scenario":
+            return self.reappraisal_scenario_state(message)
+        elif self.state == "reappraisal_ongoing":
+            return self.reappraisal_ongoing_state(message)
+        elif self.state == "final_step":
+            return self.final_step_state(message)
+
+    def initial_state(self, message):
+        if "인지적 재평가" in message:
+            self.state = "cognitive_reappraisal"
+            return ("인지적 재평가 상담은 과거의 어려운 경험을 회상하며 그 경험에 대한 생각과 감정을 재평가하는 과정입니다. "
+                    "이 과정은 감정적으로 불편할 수 있습니다. 그래도 진행하시겠습니까?")
+        else:
+            return "정말 힘드셨겠어요. 제가 도와드릴 수 있는 부분이 있다면 언제든 말씀해 주세요."
+
+    def cognitive_reappraisal_state(self, message):
+        if message.lower() in ["예", "네", "진행"]:
+            self.state = "stabilization"
+            return ("상담을 시작하기 전에 신체를 안정화하는 기법을 함께 해보겠습니다. "
+                    "다음 중 하나를 선택해주세요: "
+                    "1. 내 마음속 아지트, "
+                    "2. 지금-여기에 초점 맞추기, "
+                    "3. 자기자비 키우기, "
+                    "4. 호흡법, "
+                    "5. 진정자세 1, "
+                    "6. 진정자세 2")
+        else:
+            self.state = "initial"
+            return "다른 기능을 사용해보시겠어요? (EMDR, 마음챙김 명상 등)"
+
+    def stabilization_technique(self, message):
+        techniques = {
+            "1": self.mind_hideaway,
+            "2": self.focus_here_now,
+            "3": self.self_compassion,
+            "4": self.breathing_technique,
+            "5": self.calming_pose_1,
+            "6": self.calming_pose_2
+        }
+        technique = techniques.get(message, lambda: "잘못된 선택입니다. 다시 선택해주세요.")
+        result = technique()
+        self.state = "cognitive_reappraisal_ongoing"
+        return result + "\n\n신체가 안정된 것 같으면 말씀해주세요."
+
+    def mind_hideaway(self):
+        return ("기분 좋고 편안한 장소를 한 곳 떠올려 보세요. 예전에 가본 곳, 익숙한 곳, 상상 속의 공간도 좋아요. "
+                "공원 잔디밭, 숲길, 해변가, 내 방 이불 속 등. 어디가 떠오르나요? "
+                "떠오른 그 곳을 마음의 눈으로 천천히 둘러보세요. 그곳에서 들리는 소리에도 귀 기울여 들어보세요. "
+                "그곳의 냄새도 한번 맡아보세요. 상상으로 편안하게 느껴지는 자세를 취해보세요. "
+                "그 공간에 있는 것을 온전히 느끼면서 잠시 머물러 보세요. 충분히 좋은 느낌이 충전되면 다시 이곳으로 돌아옵니다.")
+
+    def focus_here_now(self):
+        return ("지금 여기를 찬찬히 둘러보세요. 보이는 것 세 가지, 들리는 소리 세 가지를 찾아봅니다. "
+                "그 밖에도 냄새, 맛, 촉감 등 좋은 느낌을 주는 것이 있다면 그것에 머물러 봅니다. "
+                "어떤 감정이나 감각이 느껴지나요? 감정이나 감각이 몸 어디에서 느껴지는지 주의를 기울여 봅니다.")
+
+    def self_compassion(self):
+        return ("몸을 편하게 기댈 수 있는 자세로 다음을 상상해보며 따라해보세요. "
+                "오늘도 혹시 스스로를 한없이 냉정하고 엄격하게 대하면서 책망하고 비난하진 않았나요? "
+                "'이게 다 나 때문이야', '내가 왜 그랬을까?', '나는 뭔가 잘못된 사람이야' 만일 그렇다면 다음과 같이 나를 돌보는 따뜻한 힘, "
+                "자기자비를 키우는 게 도움이 될 수 있습니다. 잠시 눈을 감고, 사람 한명을 찾아봅니다. 따뜻하고, 지혜롭고, "
+                "누군가 역경에 빠지면 기꺼이 도우려는 선의를 지닌 사람 한 명을 찾아봅니다. 살아오면서 만났던 사람, 영화나 드라마 속의 인물, "
+                "유명인사 등에서 찾으셔도 좋습니다. 찾으셨나요? 이제 마음의 눈으로 찬찬히 그 사람을 바라봅니다. 그 사람의 표정, 머리모양, "
+                "입고 있는 옷, 자세를 바라보고, 목소리 톤과 분위기를 느껴봅니다. 자책하는 나를 바라보면서 그 사람은 어떤 표정을 짓고 있나요? "
+                "어떤 말을 하나요? 어떤 행동을 하나요? 어떤 마음을 전하고 있나요? 그 사람이 전하는 마음을 느껴보고 그 느낌에 잠시 머물러 봅니다. "
+                "잠시 머무르면서 몸에서 좋은 느낌이 든다면, 그 느낌도 잠시 느껴봅니다. 준비가 되면 천천히 눈을 뜨고 내가 있던 공간으로 다시 돌아옵니다. "
+                "언젠가 도 다시 자책하는 내가 찾아올 때면, 이 메시지를 스스로에게 전해봅니다.")
+
+    def breathing_technique(self):
+        return ("배를 부풀리면서 숨을 깊게 들이 쉬어 보세요 (하나, 둘, 셋) "
+                "숨을 2배 정도 길게 내쉽니다 (넷 다섯 여섯 일곱 여덟 아홉) "
+                "잠시 숨을 멈춥니다(열) 마음이 편안해 질 때까지 반복해봅니다. (각성수준 정상화되거나 / 사용자가 정지 버튼 누르면 중단)")
+
+    def calming_pose_1(self):
+        return ("오른손은 왼쪽 겨드랑이 밑을 감싸고, 왼손을 오른쪽 어깨와 팔꿈치 사이에 살포시 올려놓습니다. "
+                "내가 나를 안아주는 느낌에 머물러봅니다.")
+
+    def calming_pose_2(self):
+        return ("한손은 가슴에, 다른 한 손은 배에 얹은 채로 두 손이 몸에 닿아있는 감각을 느껴봅니다.")
+
+    def cognitive_reappraisal_ongoing_state(self, message):
+        self.state = "reappraisal_scenario"
+        return ("이제 과거의 어려운 경험에 대해 이야기해보세요. 그 경험은 어떤 것이었나요?")
+
+    def reappraisal_scenario_state(self, message):
+        self.scenario['experience'] = message
+        self.state = "reappraisal_ongoing"
+        return ("그 경험에 대해 이야기해주셔서 감사합니다. 정말 힘든 순간이었겠네요. "
+                "이제 그 경험을 다시 생각해볼까요? 그때의 상황에서 무엇을 느꼈는지, 어떻게 반응했는지 한번 돌아봅시다. "
+                "당시에 느꼈던 감정과 지금 생각했을 때의 감정에 차이가 있을까요? 그 경험에서 배운 점이 있나요?")
+
+    def reappraisal_ongoing_state(self, message):
+        if 'first_reaction' not in self.scenario:
+            self.scenario['first_reaction'] = message
+            return ("당신은 그때 큰 충격을 받으신 것 같군요. 그때 어떤 생각을 하셨나요?")
+        elif 'first_thought' not in self.scenario:
+            self.scenario['first_thought'] = message
+            return ("당신은 그 상황에서 굉장히 무기력함을 느끼셨군요. 그 상황에서 본인이 어떤 대응을 하려고 했나요?")
+        elif 'response' not in self.scenario:
+            self.scenario['response'] = message
+            return ("힘드셨을텐데 저에게 나눠주셔서 감사해요. 조금 전 회상한 상황에서 느꼈던 감정을 말씀해주세요.")
+        elif 'emotion' not in self.scenario:
+            self.scenario['emotion'] = message
+            return ("당신은 그 순간에 강한 두려움을 느끼신 것 같네요. 그 순간에 떠오른 생각과 그 상황이 당신에게 어떤 의미였는지 이야기해주세요.")
+        elif 'thought' not in self.scenario:
+            self.scenario['thought'] = message
+            return ("그 생각에 영향을 주는 신념, 태도, 가치는 무엇인가요?")
+        elif 'values' not in self.scenario:
+            self.scenario['values'] = message
+            return ("그것과 관련한 당신의 스스로에 대한 핵심적인 생각은 무엇인가요?")
+        elif 'core_thought' not in self.scenario:
+            self.scenario['core_thought'] = message
+            return ("어떤 어린 시절의 경험이 이러한 생각에 어떻게 영향을 미쳤나요? 천천히 떠올려보세요.")
+        elif 'childhood_experience' not in self.scenario:
+            self.scenario['childhood_experience'] = message
+            return ("나누어주셔서 감사해요. 그럼 이러한 생각들을 저와 함께 검토해 볼까요? "
+                    "이 생각이 얼마나 현실과 부합한다고 느껴지세요? 이전에 비슷한 경험에서도 같은 생각이 드셨나요?")
+        elif 'reality_check' not in self.scenario:
+            self.scenario['reality_check'] = message
+            return ("이 생각이 실제로 일어날 가능성에 대해 어떻게 생각하세요? 그럴 가능성을 실제로 평가해본다면 어떤 감정이 드시나요?")
+        elif 'probability_check' not in self.scenario:
+            self.scenario['probability_check'] = message
+            return ("이 생각이 논리적으로 일관되다고 느끼시나요? 이와 반대되는 경험이나 사실이 있다면 공유해주실 수 있나요?")
+        elif 'logical_consistency' not in self.scenario:
+            self.scenario['logical_consistency'] = message
+            return ("이 생각이 당신의 삶에 어떤 영향을 미치는지 살펴볼까요? 이로 인해 느끼는 감정이나 행동에 변화가 있으신가요?")
+        elif 'impact_on_life' not in self.scenario:
+            self.scenario['impact_on_life'] = message
+            return ("이를 보다 합리적이고 도움이 되는 생각으로 바꾸어 보세요. 새로운 생각을 저와 함께 나누어봅시다.")
+        elif 'new_thought' not in self.scenario:
+            self.scenario['new_thought'] = message
+            return ("새롭게 형성한 생각을 가지고 이번 주에 특별히 주의 깊게 살펴볼 상황을 세 가지 정도 선택해보세요. "
+                    "그 상황들에서 이 새로운 생각을 어떻게 적용할 수 있을지 함께 이야기해봅시다.")
+        else:
+            self.scenario['application'] = message
+            self.state = "final_step"
+            return ("선택하신 상황에서 새로운 생각을 적용해보신 후, 그 경험에서 느낀 감정과 생각의 변화를 쉼닻 일기에 기록해보세요. "
+                    "새로운 생각을 적용하면서 어려움을 겪을 때 다시 쉼닻 챗봇을 찾아와주세요. 오늘 하루도 쉼닻과 함께 평안한 시간 보내시길 바라요.")
+
+    def final_step_state(self, message):
+        return "상담이 완료되었습니다. 감사합니다. 언제든지 도움이 필요할 때 다시 찾아와 주세요."
+
+# Streamlit 애플리케이션 시작
+st.title("쉼닻 챗봇")
+st.write("쉼닻 챗봇에 오신 것을 환영합니다. 무엇을 도와드릴까요?")
+
+# 챗봇 인스턴스 생성
+chatbot = SimdatChatbot()
+
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+# 사용자 입력 받기
+user_input = st.text_input("You:", key="user_input")
+
+if user_input:
+    response = chatbot.handle_message(user_input)
+    st.session_state.history.append(("You:", user_input))
+    st.session_state.history.append(("Bot:", response))
+    st.session_state.user_input = ""  # 입력 필드 초기화
+
+# 채팅 히스토리 출력
+for chat in st.session_state.history:
+    st.write(f"{chat[0]} {chat[1]}")
